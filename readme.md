@@ -25,22 +25,20 @@ envoy -f envoycfg.yaml
 ```
 
 4. Run the request
-You could use the `./test.sh` in the repo to make the request and usage:
 
+You will need to install `autocannon` to perform the load testing
 ```
-./test.sh <PAYLOAD_SIZE_IN_BYTES>
-```
-
-and follow the logs
-
-5. Some examples
-
-```
-./test.sh 1000 -> ok
-./test.sh 2000 -> ok
-./test.sh 10000 -> ok
-./test.sh 50000 -> ok
-./test.sh 100000 -> ok
-./test.sh 1000000 -> NOT OK, got duplicated payload and received 2000000 from the upstream
+autocannon -c 2 -m GET -d 60 -R 10 --renderStatusCodes http://localhost:10000/
 ```
 
+this will mostly be fine, there is no cancelled context, however with a bit more traffics like:
+
+
+```
+autocannon -c 2 -m GET -d 60 -R 30 --renderStatusCodes http://localhost:10000/
+```
+
+We will get quite a lot of:
+```
+Error reading message from stream: rpc error: code = Canceled desc = context canceled
+```
