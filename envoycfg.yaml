@@ -30,8 +30,8 @@ static_resources:
               processing_mode:
                 request_header_mode: SEND
                 response_header_mode: SEND
-                request_body_mode: STREAMED
-                response_body_mode: STREAMED
+                request_body_mode: BUFFERED_PARTIAL
+                response_body_mode: BUFFERED_PARTIAL
               message_timeout: 30s
               grpc_service:
                 timeout: 60s
@@ -56,6 +56,17 @@ static_resources:
                   cluster: echo_server
 
   clusters:
+  - name: ext_proc
+    http2_protocol_options: {}
+    load_assignment:
+      cluster_name: ext_proc
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 20001
   - name: echo_server
     type: static
     load_assignment:

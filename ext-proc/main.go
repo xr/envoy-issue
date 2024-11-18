@@ -20,10 +20,9 @@ func (s *service) Process(stream extproc.ExternalProcessor_ProcessServer) error 
 
 		select {
 		case <-stream.Context().Done():
-			if err := stream.Context().Err(); err != nil {
-				fmt.Printf("Error reading message from stream: %v\n", err)
-				return status.Errorf(codes.Canceled, "context cancelled")
-			}
+			err := stream.Context().Err()
+
+			fmt.Printf("Stream error: %v\n", err)
 			return nil
 		default:
 			msg, err := stream.Recv()
@@ -39,13 +38,8 @@ func (s *service) Process(stream extproc.ExternalProcessor_ProcessServer) error 
 
 			res := &extproc.ProcessingResponse{}
 
-			fmt.Printf("Received request type: %T\n", msg.Request)
-
 			switch requestType := msg.Request.(type) {
 			case *extproc.ProcessingRequest_RequestHeaders:
-				headers := msg.GetRequestHeaders()
-				fmt.Printf("Received headers: %+v\n", headers)
-
 				res.Response = &extproc.ProcessingResponse_RequestHeaders{
 					RequestHeaders: &extproc.HeadersResponse{
 						Response: &extproc.CommonResponse{
@@ -55,10 +49,6 @@ func (s *service) Process(stream extproc.ExternalProcessor_ProcessServer) error 
 				}
 
 			case *extproc.ProcessingRequest_RequestBody:
-				fmt.Printf("Received request body size %v, endOfStream: %v\n", len(msg.GetRequestBody().GetBody()), msg.GetRequestBody().GetEndOfStream())
-				if msg.GetRequestBody().GetEndOfStream() {
-					fmt.Printf("Received end of stream\n")
-				}
 				res.Response = &extproc.ProcessingResponse_RequestBody{
 					RequestBody: &extproc.BodyResponse{
 						Response: &extproc.CommonResponse{

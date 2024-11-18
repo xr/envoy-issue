@@ -29,5 +29,23 @@ app.post('/', function (req, res) {
     });
 
 })
+
+
+app.get('/', function (req, res) {
+  res.send({
+    headers: req.headers,
+    query: req.query,
+    params: req.params,
+    url: req.url,
+    hostname: req.hostname,
+    ip: req.ip,
+    ips: req.ips,
+    method: req.method,
+    baseUrl: req.baseUrl,
+    originalUrl: req.originalUrl,
+    protocol: req.protocol,
+    cookies: req.cookies,
+  });
+})
 app.listen(4000);
 
