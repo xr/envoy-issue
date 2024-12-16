@@ -21,7 +21,7 @@ cd ext-proc && go run main.go
 
 3. start envoy:
 ```
-envoy -f envoycfg.yaml
+envoy -c envoycfg.yaml
 ```
 
 4. Run the request
